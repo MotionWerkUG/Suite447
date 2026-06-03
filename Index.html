@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Suite 447 – Einverständniserklärung</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --black: #0a0a0a;
+    --dark: #141414;
+    --card: #1c1c1c;
+    --border: #2e2e2e;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --text: #e8e4dc;
+    --muted: #888;
+    --red: #d04040;
+    --green: #4a9e6a;
+    --input-bg: #222;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  header {
+    background: var(--dark);
+    border-bottom: 1px solid var(--border);
+    padding: 22px 24px 18px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header .studio {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  header h1 {
+    font-size: 20px;
+    font-weight: normal;
+    letter-spacing: 1px;
+    color: var(--text);
+  }
+  header .sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px 16px;
+  }
+
+  .section-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    margin-bottom: 18px;
+  }
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Fields */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .field-row.single { grid-template-columns: 1fr; }
+  .field-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .field label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .field input, .field textarea {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 16px; /* prevents iOS zoom */
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    -webkit-appearance: none;
+  }
+  .field input:focus, .field textarea:focus {
+    border-color: var(--gold);
+  }
+  .field textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  /* Yes/No rows */
+  .yn-list { display: flex; flex-direction: column; gap: 2px; }
+  .yn-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 14px;
+    border-radius: 7px;
+    transition: background 0.15s;
+  }
+  .yn-item:hover { background: rgba(255,255,255,0.04); }
+  .yn-item .yn-label {
+    font-size: 14px;
+    color: var(--text);
+    flex: 1;
+    padding-right: 12px;
+    line-height: 1.4;
+  }
+  .yn-label small {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .yn-buttons {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .yn-btn {
+    width: 56px;
+    height: 36px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--input-bg);
+    color: var(--muted);
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: bold;
+  }
+  .yn-btn.yes.active {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
+  .yn-btn.no.active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .yn-btn:active { transform: scale(0.95); }
+
+  /* Checkboxes (Wie erfahren) */
+  .check-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .check-item:hover { background: rgba(255,255,255,0.04); }
+  .check-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    border: 2px solid var(--border);
+    background: var(--input-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .check-box.checked {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .check-box.checked::after {
+    content: '✓';
+    font-size: 13px;
+    color: #000;
+    font-weight: bold;
+  }
+  .check-label { font-size: 14px; flex: 1; }
+  .check-extra {
+    margin-left: 34px;
+    margin-top: -4px;
+    margin-bottom: 6px;
+  }
+  .check-extra input {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    width: 100%;
+    -webkit-appearance: none;
+  }
+  .check-extra input:focus { border-color: var(--gold); }
+
+  /* Signature */
+  .sig-container {
+    position: relative;
+  }
+  .sig-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  #signatureCanvas {
+    width: 100%;
+    height: 180px;
+    background: #111;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    cursor: crosshair;
+    touch-action: none;
+    display: block;
+  }
+  #signatureCanvas.has-sig { border-color: var(--gold); border-style: solid; }
+  .sig-hint {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 6px;
+  }
+  .clear-sig-btn {
+    position: absolute;
+    top: 28px;
+    right: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  .clear-sig-btn:hover { color: var(--text); }
+
+  /* Date/Place row */
+  .date-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  /* Artist field */
+  .artist-field {
+    margin-top: 14px;
+  }
+
+  /* Action buttons */
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    flex: 1;
+    min-width: 160px;
+    padding: 16px;
+    border-radius: var(--radius);
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: #000;
+    font-weight: bold;
+  }
+  .btn-primary:hover { background: var(--gold-light); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+  .btn:active { transform: scale(0.98); }
+
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--gold);
+    color: #000;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: bold;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  .legal-text {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 18px;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 480px) {
+    .field-row, .field-row.triple { grid-template-columns: 1fr; }
+    .date-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="studio">Suite 447 Tattoo Studio</div>
+  <h1>Einverständniserklärung</h1>
+  <div class="sub">Auenstr. 2 · 80469 München</div>
+</header>
+
+<div class="container">
+
+  <!-- Persönliche Daten -->
+  <div class="section-card">
+    <div class="section-title">Persönliche Angaben</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Vorname</label>
+        <input type="text" id="f_vorname" placeholder="Vorname" autocomplete="given-name">
+      </div>
+      <div class="field">
+        <label>Nachname</label>
+        <input type="text" id="f_nachname" placeholder="Nachname" autocomplete="family-name">
+      </div>
+    </div>
+    <div class="field-row single">
+      <div class="field">
+        <label>Straße und Hausnummer</label>
+        <input type="text" id="f_strasse" placeholder="Musterstraße 12" autocomplete="street-address">
+      </div>
+    </div>
+    <div class="field-row triple">
+      <div class="field">
+        <label>PLZ</label>
+        <input type="text" id="f_plz" placeholder="80469" inputmode="numeric" autocomplete="postal-code">
+      </div>
+      <div class="field">
+        <label>Ort</label>
+        <input type="text" id="f_ort" placeholder="München" style="grid-column: span 2" autocomplete="address-level2">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Telefon</label>
+        <input type="tel" id="f_telefon" placeholder="+49 …" autocomplete="tel">
+      </div>
+      <div class="field">
+        <label>E-Mail</label>
+        <input type="email" id="f_email" placeholder="email@example.com" autocomplete="email">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Geburtsdatum</label>
+        <input type="date" id="f_geburtsdatum" autocomplete="bday">
+      </div>
+    </div>
+  </div>
+
+  <!-- Gesundheitsfragen -->
+  <div class="section-card">
+    <div class="section-title">Gesundheitliche Angaben</div>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:14px; line-height:1.6;">
+      Bitte beantworte alle Fragen ehrlich. Deine Angaben werden vertraulich behandelt.
+    </p>
+    <div class="yn-list">
+      <div class="yn-item">
+        <div class="yn-label">Covid-19 (Corona)</div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="covid" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="covid" data-val="nein">Nein</button>
+        </div>
+      </div>
+      <div class="yn-item">
+        <div class="yn-label">Zuckerkrankheit (Diabetes)</div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="diabetes" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="diabetes" data-val="nein">Nein</button>
+        </div>
+      </div>
+      <div class="yn-item">
+        <div class="yn-label">TBC</div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="tbc" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="tbc" data-val="nein">Nein</button>
+        </div>
+      </div>
+      <div class="yn-item">
+        <div class="yn-label">HIV / Aids – Infektionen</div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="hiv" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="hiv" data-val="nein">Nein</button>
+        </div>
+      </div>
+      <div class="yn-item">
+        <div class="yn-label">Hepatitis</div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="hepatitis" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="hepatitis" data-val="nein">Nein</button>
+        </div>
+      </div>
+      <div class="yn-item">
+        <div class="yn-label">Epilepsie</div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="epilepsie" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="epilepsie" data-val="nein">Nein</button>
+        </div>
+      </div>
+      <div class="yn-item">
+        <div class="yn-label">Herz- &amp; Kreislauferkrankungen / -schwächen</div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="herz" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="herz" data-val="nein">Nein</button>
+        </div>
+      </div>
+      <div class="yn-item">
+        <div class="yn-label">Blutgerinnungsstörungen</div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="blutgerinnung" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="blutgerinnung" data-val="nein">Nein</button>
+        </div>
+      </div>
+      <div class="yn-item">
+        <div class="yn-label">Bluter / gerinnungshemmende Medikamente
+          <small>z.B. Marcumar, Aspirin</small>
+        </div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="bluter" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="bluter" data-val="nein">Nein</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="field" style="margin-bottom:14px;">
+      <label>Allergien / Sonstige Erkrankungen</label>
+      <input type="text" id="f_allergien" placeholder="Bitte angeben oder leer lassen">
+    </div>
+
+    <div class="yn-list">
+      <div class="yn-item">
+        <div class="yn-label">Bist Du schwanger oder stillst du derzeit?</div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="schwanger" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="schwanger" data-val="nein">Nein</button>
+        </div>
+      </div>
+      <div class="yn-item">
+        <div class="yn-label">Hast Du in den letzten 24 Stunden Alkohol getrunken / Medikamente eingenommen?</div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="alkohol" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="alkohol" data-val="nein">Nein</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="field" style="margin: 10px 0 14px;" id="medikamente-field" style="display:none;">
+      <label>Wenn ja: Welche Medikamente / Wieviel Alkohol?</label>
+      <input type="text" id="f_medikamente" placeholder="Bitte angeben">
+    </div>
+
+    <div class="yn-list">
+      <div class="yn-item">
+        <div class="yn-label">Ich bin ausgeschlafen, habe ausreichend gegessen und fühle mich topfit</div>
+        <div class="yn-buttons">
+          <button class="yn-btn yes" data-field="topfit" data-val="ja">Ja</button>
+          <button class="yn-btn no" data-field="topfit" data-val="nein">Nein</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wie erfahren -->
+  <div class="section-card">
+    <div class="section-title">Wie hast Du von uns erfahren?</div>
+    <div class="check-group">
+      <div class="check-item" onclick="toggleCheck('instagram')">
+        <div class="check-box" id="chk-instagram"></div>
+        <span class="check-label">Instagram</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck('facebook')">
+        <div class="check-box" id="chk-facebook"></div>
+        <span class="check-label">Facebook</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck('tv')">
+        <div class="check-box" id="chk-tv"></div>
+        <span class="check-label">TV</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck('empfehlung')">
+        <div class="check-box" id="chk-empfehlung"></div>
+        <span class="check-label">Empfehlung</span>
+      </div>
+      <div class="check-extra" id="extra-empfehlung" style="display:none;">
+        <input type="text" id="f_empfehlung_von" placeholder="Empfohlen von …">
+      </div>
+      <div class="check-item" onclick="toggleCheck('mailing')">
+        <div class="check-box" id="chk-mailing"></div>
+        <span class="check-label">Mailingaktion / Event</span>
+      </div>
+      <div class="check-extra" id="extra-mailing" style="display:none;">
+        <input type="text" id="f_mailing_von" placeholder="Event / Datum …">
+      </div>
+    </div>
+  </div>
+
+  <!-- Tattoowunsch -->
+  <div class="section-card">
+    <div class="section-title">Tattoowunsch</div>
+    <div class="field">
+      <label>Beschreibung und gewünschte Körperstelle</label>
+      <textarea id="f_tattoowunsch" rows="3" placeholder="Motiv und Stelle bitte hier beschreiben …"></textarea>
+    </div>
+  </div>
+
+  <!-- Rechtliches -->
+  <div class="section-card">
+    <div class="section-title">Einverständnis &amp; Haftung</div>
+    <div class="legal-text">
+      <strong>Komplikationen:</strong> Allergien/Infektionen/Entzündungen. Trotz Einhaltung größtmöglicher Hygiene kann es zu Komplikationen kommen. Allergische Reaktionen und entzündliche Reaktionen sind möglich. Auch die Gefahr einer Infektion ist nicht auszuschließen; zur Vermeidung gehört eine richtige Pflege der Wunde. Sollten Komplikationen in Folge einer Tätowierung ärztlich behandelt werden müssen, so übernehmen die Krankenkassen NICHT die Kosten dafür.<br><br>
+      Eine gesundheitlich unbedenkliche Komplikation: „BlowOut" bedeutet, dass die Farbe in der Haut ähnlich Tinte auf den Löschpapier „ausläuft". Das ist grundsätzlich nie auszuschließen und bedingt sich schlicht im Bindegewebe.<br><br>
+      <strong>Haftung:</strong> Das Tattoo Studio Suite 447 übernimmt keine Haftung für Schäden, die während des Tätowierungsvorgangs oder danach am Kunden entstehen können z.B. Allergien, Entzündungen und Erkrankungen jeder Art. Sollten Komplikationen auftreten, befreit der Kunde den Tätowierer mit seiner Unterschrift von jeglichen Ansprüchen. Die Tätowierung stellt einen Eingriff in die körperliche Unversehrtheit dar. Durch Einverständnis entfällt die Rechtswidrigkeit.<br><br>
+      Außerdem stimme ich zu, dass Bildaufnahmen meines Tattoos für Marketingaktivitäten (Print, elektronische Medien) für Suite 447 genutzt / veröffentlicht werden dürfen.
+    </div>
+
+    <!-- Ort / Datum -->
+    <div class="date-row">
+      <div class="field">
+        <label>Ort</label>
+        <input type="text" id="f_ort_datum" value="München" placeholder="München">
+      </div>
+      <div class="field">
+        <label>Datum</label>
+        <input type="date" id="f_datum">
+      </div>
+    </div>
+
+    <!-- Unterschrift -->
+    <div class="sig-container">
+      <div class="sig-label">Unterschrift Kunde</div>
+      <canvas id="signatureCanvas"></canvas>
+      <button class="clear-sig-btn" onclick="clearSignature()">✕ Löschen</button>
+      <p class="sig-hint">Mit dem Finger oder Stylus unterschreiben</p>
+    </div>
+
+    <!-- Artist -->
+    <div class="artist-field field">
+      <label>Name des Artisten</label>
+      <input type="text" id="f_artist" placeholder="Artistenname">
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn-primary" onclick="generatePDF()">📄 PDF erstellen &amp; speichern</button>
+    <button class="btn btn-secondary" onclick="resetForm()">↺ Formular leeren</button>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── Ja/Nein Buttons ───────────────────────────────────────────────────────
+const ynState = {};
+
+document.querySelectorAll('.yn-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const field = btn.dataset.field;
+    const val = btn.dataset.val;
+    ynState[field] = val;
+    // Update UI
+    document.querySelectorAll(`.yn-btn[data-field="${field}"]`).forEach(b => {
+      b.classList.remove('active');
+    });
+    btn.classList.add('active');
+    // Show Alkohol detail field
+    if (field === 'alkohol') {
+      const mf = document.getElementById('medikamente-field');
+      mf.style.display = val === 'ja' ? 'block' : 'none';
+    }
+  });
+});
+
+// ─── Checkboxes ────────────────────────────────────────────────────────────
+const checkState = { instagram: false, facebook: false, tv: false, empfehlung: false, mailing: false };
+
+function toggleCheck(key) {
+  checkState[key] = !checkState[key];
+  const box = document.getElementById('chk-' + key);
+  if (checkState[key]) box.classList.add('checked');
+  else box.classList.remove('checked');
+  const extra = document.getElementById('extra-' + key);
+  if (extra) extra.style.display = checkState[key] ? 'block' : 'none';
+}
+
+// ─── Signature Pad ─────────────────────────────────────────────────────────
+const canvas = document.getElementById('signatureCanvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+let hasSig = false;
+
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  // Save existing drawing
+  const imgData = hasSig ? canvas.toDataURL() : null;
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.strokeStyle = '#c9a84c';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  if (imgData && hasSig) {
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img, 0, 0, rect.width, rect.height);
+    img.src = imgData;
+  }
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  if (e.touches) {
+    return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+  }
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+
+canvas.addEventListener('mousedown', e => { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+canvas.addEventListener('mousemove', e => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasSig = true; canvas.classList.add('has-sig'); });
+canvas.addEventListener('mouseup', () => drawing = false);
+canvas.addEventListener('mouseleave', () => drawing = false);
+
+canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }, { passive: false });
+canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasSig = true; canvas.classList.add('has-sig'); }, { passive: false });
+canvas.addEventListener('touchend', () => drawing = false);
+
+function clearSignature() {
+  const rect = canvas.getBoundingClientRect();
+  ctx.clearRect(0, 0, rect.width, rect.height);
+  hasSig = false;
+  canvas.classList.remove('has-sig');
+}
+
+// ─── Set today's date ──────────────────────────────────────────────────────
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('f_datum').value = today;
+
+// ─── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ─── Reset ─────────────────────────────────────────────────────────────────
+function resetForm() {
+  document.querySelectorAll('input, textarea').forEach(el => {
+    if (el.type === 'date' && el.id === 'f_datum') el.value = today;
+    else if (el.type !== 'button') el.value = '';
+  });
+  Object.keys(ynState).forEach(k => delete ynState[k]);
+  document.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('active'));
+  Object.keys(checkState).forEach(k => { checkState[k] = false; });
+  document.querySelectorAll('.check-box').forEach(b => b.classList.remove('checked'));
+  document.querySelectorAll('.check-extra').forEach(el => el.style.display = 'none');
+  document.getElementById('medikamente-field').style.display = 'none';
+  clearSignature();
+  document.getElementById('f_ort_datum').value = 'München';
+  showToast('Formular geleert');
+}
+
+// ─── PDF Generation ────────────────────────────────────────────────────────
+async function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+  const W = 210, ml = 18, mr = 18, cw = W - ml - mr;
+  let y = 0;
+
+  function checkPage(needed = 8) {
+    if (y + needed > 277) { doc.addPage(); y = 18; }
+  }
+
+  // ── Header ──
+  doc.setFillColor(20, 20, 20);
+  doc.rect(0, 0, W, 30, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.setTextColor(201, 168, 76);
+  doc.text('Suite 447 Tattoo Studio', W / 2, 11, { align: 'center' });
+  doc.setFontSize(9);
+  doc.setTextColor(180, 180, 180);
+  doc.text('Auenstr. 2 · 80469 München', W / 2, 17, { align: 'center' });
+  doc.setFontSize(13);
+  doc.setTextColor(230, 225, 215);
+  doc.text('Einverständniserklärung', W / 2, 25, { align: 'center' });
+  y = 38;
+
+  // ── Helper functions ──
+  function sectionTitle(title) {
+    checkPage(12);
+    doc.setFillColor(201, 168, 76);
+    doc.rect(ml, y, cw, 0.5, 'F');
+    y += 4;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(201, 168, 76);
+    doc.text(title.toUpperCase(), ml, y);
+    y += 6;
+    doc.setTextColor(30, 30, 30);
+  }
+
+  function fieldPair(label, value, w = cw, x = ml) {
+    checkPage(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(120, 120, 120);
+    doc.text(label, x, y);
+    y += 4;
+    doc.setFillColor(245, 245, 245);
+    doc.roundedRect(x, y - 3, w, 8, 1, 1, 'F');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(20, 20, 20);
+    doc.text(value || '—', x + 2, y + 3);
+    y += 10;
+  }
+
+  function yn(label, val) {
+    checkPage(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(30, 30, 30);
+    doc.text(label, ml + 6, y);
+    const bw = 14, bh = 6, bx = W - mr - 2 * bw - 4;
+    // JA box
+    const jaActive = val === 'ja';
+    doc.setFillColor(jaActive ? 208 : 240, jaActive ? 64 : 240, jaActive ? 64 : 240);
+    doc.roundedRect(bx, y - 4.5, bw, bh, 1, 1, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.setTextColor(jaActive ? 255 : 150, jaActive ? 255 : 150, jaActive ? 255 : 150);
+    doc.text('JA', bx + bw / 2, y - 0.5, { align: 'center' });
+    // NEIN box
+    const neinActive = val === 'nein';
+    doc.setFillColor(neinActive ? 74 : 240, neinActive ? 158 : 240, neinActive ? 106 : 240);
+    doc.roundedRect(bx + bw + 4, y - 4.5, bw, bh, 1, 1, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.setTextColor(neinActive ? 255 : 150, neinActive ? 255 : 150, neinActive ? 255 : 150);
+    doc.text('NEIN', bx + bw + 4 + bw / 2, y - 0.5, { align: 'center' });
+    y += 8;
+  }
+
+  // ── Persönliche Angaben ──
+  sectionTitle('Persönliche Angaben');
+  const vorname = document.getElementById('f_vorname').value;
+  const nachname = document.getElementById('f_nachname').value;
+  fieldPair('Vor- und Nachname', [vorname, nachname].filter(Boolean).join(' '));
+  fieldPair('Straße', document.getElementById('f_strasse').value);
+  const plz = document.getElementById('f_plz').value;
+  const ort = document.getElementById('f_ort').value;
+  const hw = (cw - 6) / 2;
+  fieldPair('PLZ', plz, hw, ml);
+  y -= 10;
+  fieldPair('Ort', ort, hw, ml + hw + 6);
+  fieldPair('Telefon', document.getElementById('f_telefon').value, hw, ml);
+  y -= 10;
+  fieldPair('E-Mail', document.getElementById('f_email').value, hw, ml + hw + 6);
+  const geb = document.getElementById('f_geburtsdatum').value;
+  if (geb) {
+    const [yy, mm, dd] = geb.split('-');
+    fieldPair('Geburtsdatum', `${dd}.${mm}.${yy}`);
+  } else {
+    fieldPair('Geburtsdatum', '');
+  }
+
+  y += 4;
+
+  // ── Gesundheitliche Angaben ──
+  sectionTitle('Gesundheitliche Angaben');
+  const questions = [
+    ['Covid-19 (Corona)', 'covid'],
+    ['Zuckerkrankheit (Diabetes)', 'diabetes'],
+    ['TBC', 'tbc'],
+    ['HIV / Aids – Infektionen', 'hiv'],
+    ['Hepatitis', 'hepatitis'],
+    ['Epilepsie', 'epilepsie'],
+    ['Herz- & Kreislauferkrankungen / -schwächen', 'herz'],
+    ['Blutgerinnungsstörungen', 'blutgerinnung'],
+    ['Bluter / gerinnungshemmende Medikamente', 'bluter'],
+  ];
+  questions.forEach(([label, key]) => yn(label, ynState[key]));
+
+  const allergien = document.getElementById('f_allergien').value;
+  if (allergien) {
+    y += 2;
+    fieldPair('Allergien / Sonstige Erkrankungen', allergien);
+  }
+
+  y += 2;
+  yn('Schwanger oder stillend?', ynState['schwanger']);
+  yn('Alkohol / Medikamente in letzten 24 Std.?', ynState['alkohol']);
+  const medikamente = document.getElementById('f_medikamente').value;
+  if (medikamente) fieldPair('Welche Medikamente / wieviel Alkohol?', medikamente);
+  yn('Ausgeschlafen, gegessen, topfit?', ynState['topfit']);
+
+  y += 4;
+
+  // ── Wie erfahren ──
+  const quellen = [];
+  if (checkState.instagram) quellen.push('Instagram');
+  if (checkState.facebook) quellen.push('Facebook');
+  if (checkState.tv) quellen.push('TV');
+  if (checkState.empfehlung) {
+    const v = document.getElementById('f_empfehlung_von').value;
+    quellen.push('Empfehlung' + (v ? `: ${v}` : ''));
+  }
+  if (checkState.mailing) {
+    const v = document.getElementById('f_mailing_von').value;
+    quellen.push('Mailingaktion/Event' + (v ? `: ${v}` : ''));
+  }
+  if (quellen.length) {
+    sectionTitle('Wie hast Du von uns erfahren?');
+    fieldPair('Quelle(n)', quellen.join(' · '));
+    y += 2;
+  }
+
+  // ── Tattoowunsch ──
+  const tattoowunsch = document.getElementById('f_tattoowunsch').value;
+  if (tattoowunsch) {
+    sectionTitle('Tattoowunsch');
+    checkPage(14);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(120, 120, 120);
+    doc.text('Beschreibung und gewünschte Körperstelle', ml, y);
+    y += 4;
+    const lines = doc.splitTextToSize(tattoowunsch, cw - 4);
+    const boxH = Math.max(12, lines.length * 5 + 6);
+    doc.setFillColor(245, 245, 245);
+    doc.roundedRect(ml, y - 3, cw, boxH, 1, 1, 'F');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(20, 20, 20);
+    doc.text(lines, ml + 2, y + 3);
+    y += boxH + 4;
+  }
+
+  // ── Rechtliches ──
+  checkPage(30);
+  sectionTitle('Komplikationen & Haftung');
+  const legalLines = doc.splitTextToSize(
+    'Trotz größtmöglicher Hygiene kann es zu Komplikationen kommen (Allergien, Infektionen, Entzündungen). Das Studio Suite 447 übernimmt keine Haftung für etwaige Schäden. Der Kunde befreit mit seiner Unterschrift den Tätowierer von jeglichen Ansprüchen. Außerdem stimmt der Kunde zu, dass Bildaufnahmen des Tattoos für Marketingzwecke genutzt werden dürfen. Die Tätowierung stellt einen Eingriff in die körperliche Unversehrtheit dar; durch ausdrückliches Einverständnis entfällt die Rechtswidrigkeit.',
+    cw
+  );
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(60, 60, 60);
+  doc.text(legalLines, ml, y);
+  y += legalLines.length * 4.5 + 6;
+
+  // ── Unterschrift + Ort/Datum ──
+  checkPage(50);
+  sectionTitle('Unterschrift');
+
+  const ortDatum = document.getElementById('f_ort_datum').value;
+  const datumVal = document.getElementById('f_datum').value;
+  let datumFormatted = datumVal;
+  if (datumVal) {
+    const [yy, mm, dd] = datumVal.split('-');
+    datumFormatted = `${dd}.${mm}.${yy}`;
+  }
+
+  // Ort / Datum field
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(120, 120, 120);
+  doc.text('Ort / Datum', ml, y);
+  y += 4;
+  doc.setFillColor(245, 245, 245);
+  doc.roundedRect(ml, y - 3, cw / 2, 8, 1, 1, 'F');
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(20, 20, 20);
+  doc.text(`${ortDatum || 'München'}, ${datumFormatted || '—'}`, ml + 2, y + 3);
+  y += 12;
+
+  // Signature image
+  if (hasSig) {
+    const sigData = canvas.toDataURL('image/png');
+    const sigW = cw;
+    const sigH = 35;
+    doc.setFillColor(248, 248, 248);
+    doc.roundedRect(ml, y, sigW, sigH, 2, 2, 'F');
+    doc.setDrawColor(201, 168, 76);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(ml, y, sigW, sigH, 2, 2, 'S');
+    doc.addImage(sigData, 'PNG', ml + 2, y + 2, sigW - 4, sigH - 4);
+    y += sigH + 4;
+  } else {
+    doc.setFillColor(248, 248, 248);
+    doc.roundedRect(ml, y, cw, 30, 2, 2, 'F');
+    doc.setDrawColor(180, 180, 180);
+    doc.setLineWidth(0.3);
+    doc.setLineDash([2, 2]);
+    doc.roundedRect(ml, y, cw, 30, 2, 2, 'S');
+    doc.setLineDash([]);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(9);
+    doc.setTextColor(160, 160, 160);
+    doc.text('Keine Unterschrift vorhanden', ml + cw / 2, y + 16, { align: 'center' });
+    y += 34;
+  }
+
+  // Artist name
+  const artist = document.getElementById('f_artist').value;
+  y += 2;
+  fieldPair('Name des Artisten', artist);
+
+  // ── Footer ──
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(160, 160, 160);
+    doc.text('Suite 447 Tattoo Studio · Auenstr. 2 · 80469 München · Stand 01.01.2026', W / 2, 291, { align: 'center' });
+    doc.text(`Seite ${i} von ${pageCount}`, W - mr, 291, { align: 'right' });
+  }
+
+  // Save
+  const fname = document.getElementById('f_nachname').value || 'Kunde';
+  const fvor = document.getElementById('f_vorname').value || '';
+  const dateiname = `Suite447_${fname}${fvor ? '_' + fvor : ''}_${(datumVal || today).replace(/-/g, '')}.pdf`;
+  doc.save(dateiname);
+  showToast('✓ PDF wurde gespeichert');
+}
+</script>
+</body>
+</html>
